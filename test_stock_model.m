@@ -1,3 +1,4 @@
+%% Test Stock Model
 close;
 clear;
 clc;
@@ -13,7 +14,7 @@ delT    = 1/260;
 days    = 260*1;
 
 % Options
-sim_20_yr   = 1;
+sim_20_yr   = 0;
 plt_example_stocks  = 0;
 sim_rand_port = 1;
 
@@ -49,26 +50,54 @@ end
 
 if (sim_rand_port)
     % Generate random portfolio
-    N           = 10;
+    N           = 1000;
     sigmaMean   = 0.15;
-    muMean      = 0.03;
+    % muMean      = 0.03;
+    % muMean      = 
     PMean       = 4;
-    PMin        = 2;
+    PMin        = 4;
     xNum        = 100;
     [P, x]  = func_invest_random(N, PMean, PMin, xNum);
     [sigmas, mus, weights, V] = func_random_portfol(N, sigmaMean, muMean, P, x);
     
     % Timestepping through Portfolio
     R_mat   = zeros(N, days);
-    t   = 0:delT:days/delT;
-    for i=1:length(t)
-        % R_mat(:,t) = ;
+    P_mat   = zeros(N, days);
+    P_mat(:,1)  = P;
+    t   = 0:delT:(days)*delT;
+    for i=1:length(t)-1
+        phis    = randn(N,1);
+        R_mat(:,i)  = mus*delT + sigmas*sqrt(delT).*phis;
+        P_mat(:,i+1)  = P_mat(:,i).*(R_mat(:,i)+1);
     end
 
+    % Overall gains
+    P_gain      = P_mat(:,end) - P_mat(:,1);
+
+    % Plotting P_mat
+    figure(1);
+    clf;
+    subplot(3,1,1);
+    plot(t/delT, P_mat);
+    xlabel("Time (days)");
+    ylabel("Stock price");
+    % legendLabels    = 1:N;
+    % legendLabels    = "Stock " + legendLabels;
+    % legend(legendLabels);
+
+    subplot(3,1,2);
+    plot(mus, P_gain, "o");
+    xlabel("Annual Return mu");
+    ylabel("Stock Price Gain");
+
+    subplot(3,1,3);
+    plot(sigmas, P_gain, "o");
+    xlabel("Volatility sigma");
+    ylabel("Stock Price Gain");
+
 end
-    
 
-
+%% Helpful Functions
 function [P, x]     = func_invest_random(N, PMean, PMin, xNum)
     % Generate random starting prices
     pSD     = (PMean-PMin)/3;
