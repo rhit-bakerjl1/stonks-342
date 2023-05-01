@@ -52,8 +52,8 @@ if (sim_rand_port)
     % Generate random portfolio
     N           = 1000;
     sigmaMean   = 0.15;
-    % muMean      = 0.03;
-    % muMean      = 
+    muMean      = 0.03;
+    % muMean      = 0.1;
     PMean       = 4;
     PMin        = 4;
     xNum        = 100;
