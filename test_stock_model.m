@@ -52,8 +52,8 @@ if (sim_rand_port)
     % Generate random portfolio
     N           = 1000;
     sigmaMean   = 0.15;
-    muMean      = 0.03;
-    % muMean      = 0.1;
+    % muMean      = 0.03;
+    muMean      = 0.1;
     PMean       = 4;
     PMin        = 4;
     xNum        = 100;
@@ -85,15 +85,24 @@ if (sim_rand_port)
     % legendLabels    = "Stock " + legendLabels;
     % legend(legendLabels);
 
+    % Plotting mus
     subplot(3,1,2);
     plot(mus, P_gain, "o");
     xlabel("Annual Return mu");
     ylabel("Stock Price Gain");
 
+    % Plotting sigmas
     subplot(3,1,3);
     plot(sigmas, P_gain, "o");
     xlabel("Volatility sigma");
     ylabel("Stock Price Gain");
+
+    % Sample Means, etc. Analyzing overall investment
+    r_vec   = 1/days*sum(R_mat, 2);
+    C_mat   = zeros(N, N);
+    for i = 1:days
+        C_mat   = C_mat + 1/(days-1)*(R_mat(:,i)-mus)*(R_mat(:,i)-mus)';
+    end
 
 end
 
