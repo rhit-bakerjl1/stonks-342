@@ -2,8 +2,8 @@ function [history, names, growth_rate, volatility, covariance] = import_stocks(f
 % Parses the data in the inputted .csv file. Returns the stock price
 % history, stock names, annual growth rates, and volatilities.
 
-% Constant values used
-DAYS_PER_YEAR = 365.25;
+% Set days per year to 260 (approx. number of trading days)
+DAYS_PER_YEAR = 260;
 % Read stock prices from a .csv generated from scrape_stocks.py
 stocks = readtable(filepath);
 % Extract the stock price names
@@ -28,3 +28,4 @@ for i = 1 : cols
     growth_rate(i) = (history(end, i) - history(1, i))*years/history(1, i);
     volatility(i) = sqrt(covariance(i,i))/delta_t;
 end
+volatility
