@@ -1,6 +1,7 @@
 function [w, mu, sigma, P0, names] = create_portfolio(filepath, alpha)
 % Set the maximum proportion of a stock to buy
-MAX_PROP = 0.25;
+% MAX_PROP = 0.25;
+MAX_PROP = 1;
 % Set the number of trading days per year
 DAYS_PER_YEAR = 252;
 % Read our stock prices
