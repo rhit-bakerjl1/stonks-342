@@ -1,4 +1,6 @@
 function [weights] = create_portfolio(filepath, alpha)
+% Set the maximum proportion of a stock to buy
+MAX_PROP = 0.25;
 % Read our stock prices
 stocks = readtable(filepath);
 % Read our stock tickers
@@ -15,7 +17,7 @@ r = mean(R);
 C = cov(R);
 % Solve the thing
 [w, optVal] = quadprog((1-alpha)*2*C, -alpha*r, [], [], ...
-    ones(1, n), [1], zeros(n, 1), 0.2*ones(n, 1));
+    ones(1, n), [1], zeros(n, 1), MAX_PROP*ones(n, 1));
 % If it suggests investing less than 0.1% into a stock, call that zero
 MIN_PERCENT = 0.001;
 for i = 1 : n
