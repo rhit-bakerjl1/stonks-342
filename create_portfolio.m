@@ -1,4 +1,4 @@
-function [weights, mu, sigma] = create_portfolio(filepath, alpha)
+function [w, mu, sigma, P0] = create_portfolio(filepath, alpha)
 % Set the maximum proportion of a stock to buy
 MAX_PROP = 0.25;
 % Set the number of trading days per year
@@ -9,6 +9,8 @@ stocks = readtable(filepath);
 names = stocks.Properties.VariableNames(2:end);
 % Load the raw stock history
 P = table2array(stocks(:,2:end));
+% Get the current prices
+P0 = P(1,:);
 % Get the number of stocks being tracked
 [~, n] = size(P);
 % Get the daily returns for each stock
@@ -44,5 +46,5 @@ weights = cell2table(reshape(names, [n 1]), "VariableNames", ["Ticker"]);
 weights.Weight = reshape(w, [n 1]);
 % Sort by weight, then alphabetically
 weights = sortrows(weights, 1);
-weights = sortrows(weights, 2, "descend");
+weights = sortrows(weights, 2, "descend"); % REMOVE SEMICOLON TO VIEW TABLE
 end
