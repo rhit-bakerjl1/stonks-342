@@ -10,7 +10,7 @@ names = stocks.Properties.VariableNames(2:end);
 % Load the raw stock history
 P = table2array(stocks(:,2:end));
 % Get the current prices
-P0 = P(1,:);
+P0 = P(end,:);
 % Get the number of stocks being tracked
 [~, n] = size(P);
 % Get the daily returns for each stock
