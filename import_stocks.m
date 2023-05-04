@@ -28,4 +28,3 @@ for i = 1 : cols
     growth_rate(i) = (history(end, i) - history(1, i))*years/history(1, i);
     volatility(i) = sqrt(covariance(i,i))/delta_t;
 end
-volatility
