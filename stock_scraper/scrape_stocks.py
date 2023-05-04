@@ -12,7 +12,7 @@ def import_ticker_list(input_file: str) -> List[str]:
     try:
         with open(input_file) as file:
             lines = file.read().splitlines()
-            return list(filter(None, lines))
+            return list(set(filter(None, lines)))
     except:
         return None
 
