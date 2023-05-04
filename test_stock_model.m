@@ -98,11 +98,25 @@ if (sim_rand_port)
     ylabel("Stock Price Gain");
 
     % Sample Means, etc. Analyzing overall investment
+    P   = P_mat';
+    R   = (P(2:end,:)-P(1:end-1,:))./(P(1:end-1,:));
+    r   = mean(R);
+    C   = cov(R);
     r_vec   = 1/days*sum(R_mat, 2);
     C_mat   = zeros(N, N);
     for i = 1:days
         C_mat   = C_mat + 1/(days-1)*(R_mat(:,i)-mus)*(R_mat(:,i)-mus)';
     end
+
+    alpha   = (0:0.01:1).^2;
+    % alpha   = 0.5;
+    w   = zeros(N, length(alpha));
+    optVal  = zeros(1,length(alpha));
+    for i = 1:length(alpha)
+        [w(:,i), optVal(:,i)] = quadprog((1-alpha(i))*2*C, -alpha(i)*r, [], [], ...
+            ones(1,N), 1, zeros(N,1), ones(N,1));
+    end
+    
 
 end
 
