@@ -6,6 +6,7 @@ clc;
 % Setup for create_portfolio
 N_alpha     = 100;
 N_stocks    = 44;
+% N_iter      = 100000;
 N_iter      = 20;
 alpha_min   = 0;
 alpha_max   = 1;
@@ -89,9 +90,10 @@ end
 % Plotting percentage chance of going positive
 figure(4);
 clf;
-plot(alphas, pos_percents*100);
+plot(alphas, pos_percents*100, "LineWidth", 2.5);
 xlabel("Alpha value");
 ylabel("Chance of going positive (%)");
+xlim([0,1]);
 
 % Analyzing
 alpha_low   = alphas(1);
