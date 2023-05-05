@@ -15,6 +15,7 @@ days        = 21;
 
 % Options
 prnt_last_P_group   = 0;
+daisy   = 1;
 
 % Create Portfolio
 weights     = zeros(N_stocks, N_alpha);
@@ -28,37 +29,29 @@ end
 % New Strategy: invest equally
 weights(:,end)  = ones(N_stocks, 1)/N_stocks;
 
-for iter = 1:12
-    if (iter ~= 1)
-        [weights(:,1), mus, sigmas, P0_vec, ~]  = create_portfolio_p(P_mat, alphas(1), days);
-        for i = 2:length(alphas)
-            [weights(:,i), ~, ~] = create_portfolio_p(P_mat, alphas(i), days);
-        end
-        weights(:,end)  = ones(N_stocks, 1)/N_stocks;
-    end
-    mus     = mus';
-    sigmas = sigmas';
-    P0_vec  = P0_vec';
-    names   = names';
-    
-    % Get average gainz
-    gainz_grp   = zeros(N_iter, N_alpha);
-    gainz       = zeros(N_iter, N_stocks);
-    % [~, gainz_grp_avg, gainz_avg] = Pb6_iteration(weights, mus ,sigmas, P0_vec, N_alpha, N_stocks, days);
-    % gainz_grp_min   = gainz_grp_avg;
-    % gainz_grp_max   = gainz_grp_avg;
-    for i = 1:N_iter
-        [P_group, P_mat, gainz_grp(i,:), gainz(i,:)] = Pb6_iteration(weights, mus ,sigmas, P0_vec, N_alpha, N_stocks, days);
-        % gainz_grp_avg   = gainz_grp_avg + gainz_group;
-        % gainz_avg       = gainz_avg + gainz;
-    end
-    
-    % Actual average time
-    gainz_grp_avg   = mean(gainz_grp, 1);
-    gainz_grp_std   = std(gainz_grp, 1);
-    gainz_avg       = mean(gainz, 1);
-    gainz_std       = std(gainz, 1);
+% Flip because we said so
+mus     = mus';
+sigmas = sigmas';
+P0_vec  = P0_vec';
+names   = names';
+
+% Get average gainz
+gainz_grp   = zeros(N_iter, N_alpha);
+gainz       = zeros(N_iter, N_stocks);
+% [~, gainz_grp_avg, gainz_avg] = Pb6_iteration(weights, mus ,sigmas, P0_vec, N_alpha, N_stocks, days);
+% gainz_grp_min   = gainz_grp_avg;
+% gainz_grp_max   = gainz_grp_avg;
+for i = 1:N_iter
+    [P_group, P_mat, gainz_grp(i,:), gainz(i,:)] = Pb6_iteration(weights, mus ,sigmas, alphas, P0_vec, N_alpha, N_stocks, days, daisy);
+    % gainz_grp_avg   = gainz_grp_avg + gainz_group;
+    % gainz_avg       = gainz_avg + gainz;
 end
+
+% Actual average time
+gainz_grp_avg   = mean(gainz_grp, 1);
+gainz_grp_std   = std(gainz_grp, 1);
+gainz_avg       = mean(gainz, 1);
+gainz_std       = std(gainz, 1);    
 
 % Plotting
 if (prnt_last_P_group)
