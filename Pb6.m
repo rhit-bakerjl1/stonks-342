@@ -137,7 +137,7 @@ figure(5);
 clf;
 X   = categorical(names);
 X   = reordercats(X, names);
-bar(X,weights(:,end));
+bar(X,weights(:,ind_max));
 ylabel("Weight");
 
 %% Helpful Functions
