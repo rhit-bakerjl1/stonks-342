@@ -4,31 +4,43 @@ clear;
 clc;
 
 % Setup for create_portfolio
-N_alpha     = 100;
+N_alpha     = 101;
 N_stocks    = 44;
-% N_iter      = 100000;
-N_iter      = 20;
+N_iter      = 100000;
+% N_iter      = 20;
+N_modif     = 3;
 alpha_min   = 0;
 alpha_max   = 1;
-alphas      = linspace(alpha_min,alpha_max,N_alpha-1);
+alphas      = linspace(alpha_min,alpha_max,N_alpha-N_modif);
 filepath    = "stock_scraper/combined_history.csv";
-days        = 21;
+days        = 21*6;
 
 % Options
 prnt_last_P_group   = 0;
-daisy   = 1;
+daisy   = 0;
 
 % Create Portfolio
 weights     = zeros(N_stocks, N_alpha);
 alphas   = alphas.^2;
-alphas  = [alphas, 2];
 [weights(:,1), mus, sigmas, P0_vec, names]  = create_portfolio(filepath, alphas(1));
 
 for i = 2:length(alphas)
     [weights(:,i), ~, ~] = create_portfolio(filepath, alphas(i));
 end
 % New Strategy: invest equally
-weights(:,end)  = ones(N_stocks, 1)/N_stocks;
+weights(:,end-2)    = ones(N_stocks, 1)/N_stocks;
+% New Strategy: invest in things with positive mu
+weights(:,end-1)    = ones(N_stocks, 1);
+weights(mus<0,end-1)    = 0;
+weights(:,end-1)    = weights(:,end-1)/sum(weights(:,end-1));
+% New Strategy: invest according to mu/sigma
+weights(:,end)      = ones(N_stocks,1)/N_stocks;
+weights(mus<0,end)  = 0;
+weights(mus>=0,end) = mus(mus>=0)./sigmas(mus>=0);
+weights(:,end)      = weights(:,end)/sum(weights(:,end));
+
+% Making Room for other folks
+alphas  = [alphas, 2, 2.1, 2.2];
 
 % Flip because we said so
 mus     = mus';
@@ -43,7 +55,7 @@ gainz       = zeros(N_iter, N_stocks);
 % gainz_grp_min   = gainz_grp_avg;
 % gainz_grp_max   = gainz_grp_avg;
 for i = 1:N_iter
-    [P_group, P_mat, gainz_grp(i,:), gainz(i,:)] = Pb6_iteration(weights, mus ,sigmas, alphas, P0_vec, N_alpha, N_stocks, days, daisy);
+    [P_group, P_mat, gainz_grp(i,:), gainz(i,:)] = Pb6_iteration(weights, mus ,sigmas, alphas(1:end-1), P0_vec, N_alpha, N_stocks, days, daisy);
     % gainz_grp_avg   = gainz_grp_avg + gainz_group;
     % gainz_avg       = gainz_avg + gainz;
     disp("i = " + i);
@@ -68,7 +80,8 @@ end
 % Revenues
 figure(2);
 clf;
-plot(alphas(1:end-1), gainz_grp_avg(1:end-1), "LineWidth", 2.5);
+% plot(alphas(1:end-1), gainz_grp_avg(1:end-1), "LineWidth", 2.5);
+plot(alphas, gainz_grp_avg, "LineWidth", 2.5);
 xlabel("Risk Level (alpha)");
 ylabel("Average Profit after One Month ($)");
 
@@ -93,7 +106,7 @@ clf;
 plot(alphas, pos_percents*100, "LineWidth", 2.5);
 xlabel("Alpha value");
 ylabel("Chance of going positive (%)");
-xlim([0,1]);
+% xlim([0,1]);
 
 % Analyzing
 alpha_low   = alphas(1);
@@ -106,14 +119,26 @@ alpha_min   = alphas(ind_min);
 % Printing
 disp("Low Alpha Investment of alpha = " + alpha_low + ": gainz = " + gainz_grp_avg(1));
 print_invest_info(names, weights(:,1), gainz_avg, gainz_std, mus, sigmas);
-disp("High Risk Investment of alpha = " + alpha_high + ": gainz = " + gainz_grp_avg(end-1));
-print_invest_info(names, weights(:,end-1), gainz_avg, gainz_std, mus, sigmas);
-disp("Safe Investment of even distribution: gainz = " + gainz_grp_avg(end));
-print_invest_info(names, weights(:,end), gainz_avg, gainz_std, mus, sigmas);
+disp("High Risk Investment of alpha = " + alpha_high + ": gainz = " + gainz_grp_avg(end-N_modif));
+print_invest_info(names, weights(:,end-N_modif), gainz_avg, gainz_std, mus, sigmas);
+disp("Safe Investment of even distribution: gainz = " + gainz_grp_avg(end-N_modif+1));
+print_invest_info(names, weights(:,end-N_modif+1), gainz_avg, gainz_std, mus, sigmas);
+disp("Safe Investment of investing in positive mu = " + gainz_grp_avg(end-N_modif+2));
+print_invest_info(names, weights(:,end-N_modif+2), gainz_avg, gainz_std, mus, sigmas);
+disp("Safe Investment of investing in positive mu and based on sigma = " + gainz_grp_avg(end-N_modif+3));
+print_invest_info(names, weights(:,end-N_modif+3), gainz_avg, gainz_std, mus, sigmas);
 disp("Highest gain investment of alpha = " + alpha_max + ": gainz = " + gainz_grp_avg(ind_max));
 print_invest_info(names, weights(:,ind_max), gainz_avg, gainz_std, mus, sigmas);
 disp("Highest loss investment of alpha = " + alpha_min + ": gainz = " + gainz_grp_avg(ind_min));
 print_invest_info(names, weights(:,ind_min), gainz_avg, gainz_std, mus, sigmas);
+
+% Bar Graph
+figure(5);
+clf;
+X   = categorical(names);
+X   = reordercats(X, names);
+bar(X,weights(:,end));
+ylabel("Weight");
 
 %% Helpful Functions
 function [] = print_invest_info(names, weights, gainz, stds, mus, sigmas)
