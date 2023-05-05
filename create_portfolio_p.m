@@ -1,4 +1,4 @@
-function [w, mu, sigma, P0, names] = create_portfolio_p(P, alpha, delta_t)
+function [w, mu, sigma, P0] = create_portfolio_p(P, alpha, delta_t)
 % Set the maximum proportion of a stock to buy
 MAX_PROP = 1;
 % Get the current prices
