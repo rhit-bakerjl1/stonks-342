@@ -1,4 +1,4 @@
-function [P_group, gainz_group, gainz] = Pb6_iteration(weights, mus, sigmas, P0_vec, N_alpha, N_stocks, days)
+function [P_group, P_mat, gainz_group, gainz] = Pb6_iteration(weights, mus, sigmas, P0_vec, N_alpha, N_stocks, days)
     % Constants
     delT        = 1/260;
 
