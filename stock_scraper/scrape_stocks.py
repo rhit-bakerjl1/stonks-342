@@ -25,6 +25,8 @@ def ticker_history(tickers: List[str], days=30) -> pd.DataFrame:
     start = (datetime.today()-delta).strftime("%Y-%m-%d")
     data = yf.download(tickers, start=start, end=end)
     df = pd.DataFrame(data["Adj Close"])
+    # Remove rows with empty values
+    df.dropna(inplace=True)
     return df
 
 def main(input_file="dow.stocks", output_file="stock_history.csv", days=0):
