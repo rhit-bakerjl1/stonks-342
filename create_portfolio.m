@@ -31,6 +31,7 @@ for i = 1 : n
 end
 % Solve the thing
 options = optimset('Display', 'off');
+warning("off");
 [w, optVal] = quadprog((1-alpha)*2*C, -alpha*mu, [], [], ...
     ones(1, n), [1], zeros(n, 1), MAX_PROP*ones(n, 1), zeros(n, 1), options);
 % If it suggests investing less than 0.1% into a stock, call that zero
