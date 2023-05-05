@@ -50,7 +50,7 @@ end
 
 if (sim_rand_port)
     % Generate random portfolio
-    N           = 1000;
+    N           = 1600;
     sigmaMean   = 0.15;
     % muMean      = 0.03;
     muMean      = 0.1;
@@ -139,9 +139,15 @@ function [sigmas, mus, weights, V] = func_random_portfol(N, sigmaMean, muMean, P
     % Generate random sigmas
     sigmaSD     = sigmaMean/3;
     sigmas  = sigmaSD*randn(N,1) + sigmaMean;
+    % sigmas  = linspace(0, sigmaMean*3, sqrt(N))';
+    % sigmas  = repmat(sigmas, 1, sqrt(N));
+    % sigmas  = reshape(sigmas, N, 1);
     % Generate random mus
     muSD    = muMean/3;
     mus     = muSD*randn(N,1) + muMean;
+    % mus     = linspace(0, muMean*3, sqrt(N));
+    % mus     = repmat(mus, sqrt(N), 1);
+    % mus     = reshape(mus, N, 1);
 
     % V
     V   = sum(x.*P);
