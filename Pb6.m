@@ -4,8 +4,8 @@ clear;
 clc;
 
 % Setup for create_portfolio
-N_alpha     = 100;
-N_stocks    = 41;
+N_alpha     = 500;
+N_stocks    = 44;
 N_iter      = 100000;
 alpha_min   = 0;
 alpha_max   = 1;
@@ -62,16 +62,17 @@ end
 % Revenues
 figure(2);
 clf;
-plot(alphas, gainz_grp_avg);
-xlabel("Alpha value");
-ylabel("Overall Gain ($)");
+plot(alphas(1:end-1), gainz_grp_avg(1:end-1), "LineWidth", 2.5);
+xlabel("Risk Level (alpha)");
+ylabel("Average Profit after One Month ($)");
 
 % Gain Standard Deviations
 figure(3);
 clf;
-plot(alphas, gainz_grp_std);
-xlabel("Alpha value");
-ylabel("Standard Deviation");
+errorbar(alphas(1:end-1), gainz_grp_avg(1:end-1) + 2000, gainz_grp_std(1:end-1));
+ylim([0 3000]);
+xlabel("Risk Level (alpha)");
+ylabel("Portfolio Value after One Month ($)");
 
 % Analyzing
 alpha_low   = alphas(1);
