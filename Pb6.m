@@ -6,7 +6,7 @@ clc;
 % Setup for create_portfolio
 N_alpha     = 100;
 N_stocks    = 44;
-N_iter      = 10000;
+N_iter      = 20;
 alpha_min   = 0;
 alpha_max   = 1;
 alphas      = linspace(alpha_min,alpha_max,N_alpha-1);
@@ -45,6 +45,7 @@ for i = 1:N_iter
     [P_group, P_mat, gainz_grp(i,:), gainz(i,:)] = Pb6_iteration(weights, mus ,sigmas, alphas, P0_vec, N_alpha, N_stocks, days, daisy);
     % gainz_grp_avg   = gainz_grp_avg + gainz_group;
     % gainz_avg       = gainz_avg + gainz;
+    disp("i = " + i);
 end
 
 % Actual average time

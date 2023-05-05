@@ -9,15 +9,14 @@ function [P_group, P_mat, gainz_group, gainz] = Pb6_iteration(weights, mus, sigm
     % Simulate Stocks with daisychaining
     for iter = 1:12
         if (iter ~= 1)
-            [weights(:,1), mus, sigmas, P0_vec, ~]  = create_portfolio_p(P_mat, alphas(1), days);
-            for i = 2:length(alphas)
-                [weights(:,i), ~, ~] = create_portfolio_p(P_mat, alphas(i), days);
+            [weights(:,1), mus, sigmas, P0_vec]  = create_portfolio_p(P_mat, alphas(1), days);
+            for i = 2:length(alphas)-1
+                [weights(:,i), ~, ~, ~] = create_portfolio_p(P_mat, alphas(i), days);
             end
             weights(:,end)  = ones(N_stocks, 1)/N_stocks;
             mus     = mus';
             sigmas = sigmas';
             P0_vec  = P0_vec';
-            names   = names';
         end
         phis    = randn(N_stocks, days);
         mus_mat = repmat(mus,1,days);
