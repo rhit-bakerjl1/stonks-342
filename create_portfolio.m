@@ -1,11 +1,10 @@
 function [w, mu, sigma, P0, names] = create_portfolio(filepath, alpha)
 % Set the maximum proportion of a stock to buy
-% MAX_PROP = 0.25;
 MAX_PROP = 1;
 % Set the number of trading days per year
 DAYS_PER_YEAR = 252;
 % Read our stock prices
-stocks = readtable(filepath);
+stocks = readtable(filepath, "VariableNamingRule", "preserve");
 % Read our stock tickers
 names = stocks.Properties.VariableNames(2:end);
 % Load the raw stock history
@@ -31,8 +30,9 @@ for i = 1 : n
     sigma(i) = sqrt(C(i,i))/delta_t;
 end
 % Solve the thing
+options = optimset('Display', 'off');
 [w, optVal] = quadprog((1-alpha)*2*C, -alpha*mu, [], [], ...
-    ones(1, n), [1], zeros(n, 1), MAX_PROP*ones(n, 1));
+    ones(1, n), [1], zeros(n, 1), MAX_PROP*ones(n, 1), zeros(n, 1), options);
 % If it suggests investing less than 0.1% into a stock, call that zero
 MIN_PERCENT = 0.001;
 for i = 1 : n
