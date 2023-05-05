@@ -14,7 +14,7 @@ C = cov(R);
 % Calculate our volatilities
 sigma = zeros(1, n);
 for i = 1 : n
-    sigma(i) = sqrt(C(i,i))/delta_t;
+    sigma(i) = n*sqrt(C(i,i))/delta_t;
 end
 % Solve the thing
 options = optimset('Display', 'off');
