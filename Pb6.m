@@ -83,30 +83,46 @@ clf;
 % plot(alphas(1:end-1), gainz_grp_avg(1:end-1), "LineWidth", 2.5);
 plot(alphas, gainz_grp_avg, "LineWidth", 2.5);
 xlabel("Risk Level (alpha)");
-ylabel("Average Profit after One Month ($)");
+ylabel("Average Profit after Six Months ($)");
+xlim([0,1]);
+
+% Standard Deviations
+figure(1);
+clf;
+% plot(alphas(1:end-1), gainz_grp_avg(1:end-1), "LineWidth", 2.5);
+plot(alphas, gainz_grp_std, "LineWidth", 2.5);
+xlabel("Risk Level (alpha)");
+ylabel("Standard Deviation of Six-Month Profit ($)");
+xlim([0,1]);
 
 % Gain Standard Deviations
 figure(3);
 clf;
 errorbar(alphas(1:end-1), gainz_grp_avg(1:end-1) + 2000, gainz_grp_std(1:end-1));
-ylim([0 3000]);
+ylim([0 3500]);
 xlabel("Risk Level (alpha)");
-ylabel("Portfolio Value after One Month ($)");
+ylabel("95% CI of Portfolio Value after Six Months ($)");
+xlim([0,1]);
 
 % Finding percentage chance of going positive
 zero_std    = -gainz_grp_avg./gainz_grp_std;
+neg_200_std = (gainz_grp_avg+200)./gainz_grp_std;
 pos_percents    = zeros(size(zero_std));
+neg_200_percents    = zeros(size(neg_200_std));
 for i = 1:N_alpha
     pos_percents(i) = diff(normcdf([zero_std(i), 50]));
+    neg_200_percents(i)     = diff(normcdf([neg_200_std(i),50]));
 end
 
 % Plotting percentage chance of going positive
 figure(4);
 clf;
 plot(alphas, pos_percents*100, "LineWidth", 2.5);
+% plot(alphas, neg_200_percents*100, "LineWidth", 2.5);
 xlabel("Alpha value");
-ylabel("Chance of going positive (%)");
-% xlim([0,1]);
+ylabel("Chance of Net Positive Result After Six Months (%)");
+% ylabel("Chance of Losing a Minimum of $200 After Six Months (%)");
+xlim([0,1]);
 
 % Analyzing
 alpha_low   = alphas(1);
@@ -137,8 +153,25 @@ figure(5);
 clf;
 X   = categorical(names);
 X   = reordercats(X, names);
-bar(X,weights(:,ind_max));
+bar(X,weights(:,21));
 ylabel("Weight");
+
+% Many simulations
+figure(6);
+clf;
+days_vec    = 0:126;
+hold on;
+N_plots     = 5;
+legendStatements    = string(N_plots);
+alpha_ind  = ceil(linspace(1,length(alphas)-5,N_plots));
+for i = 1:N_plots
+    plot(days_vec, P_group(:,alpha_ind(i)));
+    legendStatements(i)     = "Alpha = " + alphas(alpha_ind(i));
+end
+% plot(days_vec, P_group);
+xlabel("Time (days)");
+ylabel("Portfolio value for different risk levels");
+legend(legendStatements);
 
 %% Helpful Functions
 function [] = print_invest_info(names, weights, gainz, stds, mus, sigmas)
